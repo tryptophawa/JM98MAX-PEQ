@@ -119,15 +119,10 @@ export function renderUI(eqState: EQ) {
  */
 export async function connectToDevice() {
 	try {
-		// Updated filters to support more Savitech devices (Fosi, etc.)
-		// and allow Comtrue devices (Moondrop/Tanchjim) to at least attempt connection
-		const devices = await navigator.hid.requestDevice({
-			filters: [
-				{ vendorId: 0x661 }, // JCally / Generic Savitech
-				{ vendorId: 0x262a }, // Savitech Official (Fosi, iBasso, Fiio KA series)
-				{ vendorId: 0x2fc6 }, // Comtrue CT7601 (Moondrop, Tanchjim - Protocol might differ!)
-			],
-		});
+		// Request all HID devices — don't filter by vendorId because some JM98MAX
+		// variants report an empty report descriptor or use a vendor ID not listed here,
+		// which would cause the browser picker to hide them entirely.
+		const devices = await navigator.hid.requestDevice({ filters: [] });
 
 		if (devices.length === 0) return;
 
